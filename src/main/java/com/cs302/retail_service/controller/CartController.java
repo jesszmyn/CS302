@@ -30,6 +30,16 @@ public class CartController {
         return cartService.viewCart(cartId);
     }
 
+    @DeleteMapping("/{cartId}/items/{cartItemId}")
+    public Cart deleteCartItem(@PathVariable Long cartId, @PathVariable Long cartItemId) {
+        return cartService.deleteItemFromCart(cartId, cartItemId);
+    }
+
+    @PutMapping("/{cartId}/items/{cartItemId}")
+    public Cart updateCartItemQuantity(@PathVariable Long cartId, @PathVariable Long cartItemId, @RequestParam int newQuantity) {
+        return cartService.updateCartItemQuantity(cartId, cartItemId, newQuantity);
+    }
+
     @PostMapping("/{cartId}/checkout")
     public String checkout(@PathVariable Long cartId) {
         return cartService.checkout(cartId);

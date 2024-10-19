@@ -56,6 +56,34 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    public Cart deleteItemFromCart(Long cartId, Long cartItemId) {
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        cart.getItems().removeIf(item -> item.getId().equals(cartItemId));
+        
+        return cartRepository.save(cart);
+    }
+
+    public Cart updateCartItemQuantity(Long cartId, Long cartItemId, int newQuantity) {
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        CartItem cartItem = cart.getItems().stream()
+            .filter(item -> item.getId().equals(cartItemId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+        // Check if there is enough stock
+        if (cartItem.getWatch().getStock() < newQuantity) {
+            throw new RuntimeException("Not enough stock available for " + cartItem.getWatch().getModelName());
+        }
+
+        cartItem.setQuantity(newQuantity);
+
+        return cartRepository.save(cart);
+    }
+
     @Transactional
     public String checkout(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
